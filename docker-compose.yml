@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: restaurante-postgres
+    restart: always
+    shm_size: 128mb
+
+    environment:
+      POSTGRES_DB: restaurante_pos
+      POSTGRES_USER: restaurante_user
+      POSTGRES_PASSWORD: restaurante_pass
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U restaurante_user -d restaurante_pos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - restaurante-network
+
+  adminer:
+    image: adminer:latest
+    container_name: restaurante-adminer
+    restart: always
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      - restaurante-network
+
+volumes:
+  postgres_data:
+
+networks:
+  restaurante-network:
+    driver: bridge
