@@ -1,80 +1,138 @@
 # restaurante-pos
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+API de ponto de venda para restaurante, construida com Quarkus, PostgreSQL, Hibernate ORM Panache e Liquibase.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Pre-requisitos
 
-## Running the application in dev mode
+- Docker e Docker Compose
+- JDK configurado no `JAVA_HOME`
+- Maven Wrapper do projeto (`mvnw` / `mvnw.cmd`)
 
-You can run your application in dev mode that enables live coding using:
+## Como rodar o projeto
 
-```shell script
+Antes de iniciar a aplicacao, suba o banco de dados com Docker Compose:
+
+```shell
+docker compose up -d db
+```
+
+O servico `db` cria um PostgreSQL local com as credenciais usadas pela aplicacao:
+
+- Banco: `restaurante_pos`
+- Usuario: `restaurante_user`
+- Senha: `restaurante_pass`
+- Porta: `5432`
+
+Depois que o banco estiver saudavel, rode a aplicacao em modo desenvolvimento:
+
+No Windows:
+
+```shell
+.\mvnw.cmd quarkus:dev
+```
+
+No Linux/macOS:
+
+```shell
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+A API ficara disponivel em:
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```text
+http://localhost:8080
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+O Quarkus Dev UI fica disponivel em:
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```text
+http://localhost:8080/q/dev/
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Swagger UI e OpenAPI
 
-## Creating a native executable
+A documentacao da API fica disponivel pelo Swagger UI em:
 
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+```text
+http://localhost:8080/q/swagger-ui
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+O documento OpenAPI em JSON/YAML fica disponivel em:
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+```text
+http://localhost:8080/q/openapi
 ```
 
-You can then execute your native executable with: `./target/restaurante-pos-1.0.0-SNAPSHOT-runner`
+O projeto usa a extensao `quarkus-smallrye-openapi`. A API esta mapeada com metadados no `application.properties` e com anotacoes OpenAPI no controller de usuario.
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+## Docker Compose completo
 
-## Related Guides
+O arquivo `docker-compose.yml` tambem possui o servico `adminer`. Para subir banco e Adminer:
 
-- REST ([guide](https://quarkus.io/guides/rest)): Build RESTful web services and APIs using Jakarta REST (formerly JAX-RS)
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplified JPA/Hibernate data access layer with active record and repository patterns
-- Liquibase ([guide](https://quarkus.io/guides/liquibase)): Handle your database schema migrations with Liquibase
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
+```shell
+docker compose up -d
+```
 
-## Provided Code
+Atencao: o Adminer esta configurado na porta `8080`, que e a mesma porta da aplicacao Quarkus. Para desenvolver a API localmente, prefira subir apenas o banco com:
 
-### Hibernate ORM
+```shell
+docker compose up -d db
+```
 
-Create your first JPA entity
+## Banco de dados e migrations
 
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
+As migrations Liquibase rodam automaticamente ao iniciar a aplicacao:
 
+```properties
+quarkus.liquibase.migrate-at-start=true
+```
 
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
+O changelog principal esta em:
 
+```text
+src/main/resources/db/db.changelog-master.sql
+```
 
-### REST
+As tabelas sao criadas a partir de:
 
-Easily start your REST Web Services
+```text
+src/main/resources/db/migrations/create-database.sql
+```
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+## Endpoints
+
+Login de usuario:
+
+```http
+POST /usuario/login
+Content-Type: application/json
+```
+
+Exemplo de corpo:
+
+```json
+{
+  "user": "admin",
+  "password": "admin"
+}
+```
+
+## Comandos uteis
+
+Rodar testes:
+
+```shell
+.\mvnw.cmd test
+```
+
+Gerar pacote da aplicacao:
+
+```shell
+.\mvnw.cmd package
+```
+
+Parar os containers:
+
+```shell
+docker compose down
+```
