@@ -199,7 +199,7 @@ class UsuarioRepositoryTest {
     @Test
     @Transactional
     @DisplayName("Deve manter outros usuários ao deletar um")
-    void testDeletarUsuarioSemAfetar outros() {
+    void testDeletarUsuarioSemAfetatOutros() {
         Usuario usuario2 = new Usuario();
         usuario2.setNome("Maria Silva");
         usuario2.setLogin("maria.silva");
