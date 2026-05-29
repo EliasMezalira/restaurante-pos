@@ -53,9 +53,9 @@ class UserServiceTest {
         LoginResponse response = userService.login(loginRequest);
 
         assertNotNull(response);
-        assertTrue(response.sucesso());
-        assertEquals(BigDecimal.valueOf(1L), response.id());
-        assertEquals("João Silva", response.nome());
+        assertTrue(response.loginSuccess());
+        assertEquals(BigDecimal.valueOf(1L), response.userId());
+        assertEquals("João Silva", response.userName());
     }
 
     @Test
