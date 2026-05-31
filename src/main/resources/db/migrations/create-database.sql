@@ -24,13 +24,14 @@ CREATE INDEX IF NOT EXISTS idx_usuario_login
     ON usuario(login);
 
 
-
 --changeset restaurante:002-create-garcom
 CREATE TABLE IF NOT EXISTS garcom (
                                       id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                       nome VARCHAR(150) NOT NULL,
-    percentual_gorjeta DECIMAL(5,2) NOT NULL,
-    idade INTEGER NOT NULL
+    documento VARCHAR(20) NOT NULL,
+    foto_url TEXT,
+    foto_base64 TEXT,
+    folgas VARCHAR(3)[] NOT NULL DEFAULT '{}'
     );
 
 DO $$
@@ -38,37 +39,82 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM pg_constraint
-        WHERE conname = 'chk_garcom_percentual'
+        WHERE conname = 'uk_garcom_documento'
     ) THEN
 ALTER TABLE garcom
-    ADD CONSTRAINT chk_garcom_percentual
-        CHECK (percentual_gorjeta >= 0);
-END IF;
-
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_constraint
-        WHERE conname = 'chk_garcom_idade'
-    ) THEN
-ALTER TABLE garcom
-    ADD CONSTRAINT chk_garcom_idade
-        CHECK (idade > 0);
+    ADD CONSTRAINT uk_garcom_documento UNIQUE (documento);
 END IF;
 END $$;
 
+CREATE INDEX IF NOT EXISTS idx_garcom_documento
+    ON garcom(documento);
 
 
---changeset restaurante:003-create-menu
-CREATE TABLE IF NOT EXISTS menu (
-                                    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-                                    nome VARCHAR(150) NOT NULL,
-    ingredientes TEXT,
-    categoria VARCHAR(100) NOT NULL,
-    valor DECIMAL(10,2) NOT NULL
+--changeset restaurante:003-create-cliente
+CREATE TABLE IF NOT EXISTS cliente (
+                                       id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+                                       nome VARCHAR(150) NOT NULL,
+    telefone VARCHAR(11) NOT NULL,
+    rua VARCHAR(200) NOT NULL,
+    numero VARCHAR(20) NOT NULL,
+    complemento VARCHAR(200),
+    bairro VARCHAR(100) NOT NULL,
+    referencia VARCHAR(255),
+    email VARCHAR(150),
+    observacoes TEXT
     );
 
 DO $$
 BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'chk_cliente_telefone'
+    ) THEN
+ALTER TABLE cliente
+    ADD CONSTRAINT chk_cliente_telefone
+        CHECK (telefone ~ '^[0-9]{10,11}$');
+END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_cliente_nome
+    ON cliente(nome);
+
+CREATE INDEX IF NOT EXISTS idx_cliente_telefone
+    ON cliente(telefone);
+
+
+--changeset restaurante:004-create-menu
+CREATE TABLE IF NOT EXISTS menu (
+                                    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+                                    categoria VARCHAR(30) NOT NULL,
+    nome VARCHAR(150) NOT NULL,
+    ingredientes TEXT NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    imagem_url TEXT,
+    imagem_base64 TEXT
+    );
+
+DO $$
+BEGIN
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'chk_menu_categoria'
+    ) THEN
+ALTER TABLE menu
+    ADD CONSTRAINT chk_menu_categoria
+        CHECK (
+            categoria IN (
+                          'ENTRADA',
+                          'PRATO_PRINCIPAL',
+                          'SOBREMESA',
+                          'BEBIDA'
+                )
+            );
+END IF;
+
     IF NOT EXISTS (
         SELECT 1
         FROM pg_constraint
@@ -78,19 +124,19 @@ ALTER TABLE menu
     ADD CONSTRAINT chk_menu_valor
         CHECK (valor > 0);
 END IF;
+
 END $$;
 
 CREATE INDEX IF NOT EXISTS idx_menu_categoria
     ON menu(categoria);
 
 
-
---changeset restaurante:004-create-comanda
+--changeset restaurante:005-create-comanda
 CREATE TABLE IF NOT EXISTS comanda (
                                        id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                        numero_comanda VARCHAR(50) NOT NULL,
     mesa VARCHAR(20) NOT NULL,
-    cliente VARCHAR(150),
+    cliente_id BIGINT,
     garcom_id BIGINT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'ABERTA',
     data_abertura TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -99,6 +145,7 @@ CREATE TABLE IF NOT EXISTS comanda (
 
 DO $$
 BEGIN
+
     IF NOT EXISTS (
         SELECT 1
         FROM pg_constraint
@@ -107,6 +154,18 @@ BEGIN
 ALTER TABLE comanda
     ADD CONSTRAINT uk_comanda_numero
         UNIQUE (numero_comanda);
+END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'fk_comanda_cliente'
+    ) THEN
+ALTER TABLE comanda
+    ADD CONSTRAINT fk_comanda_cliente
+        FOREIGN KEY (cliente_id)
+            REFERENCES cliente(id)
+            ON DELETE SET NULL;
 END IF;
 
     IF NOT EXISTS (
@@ -128,19 +187,28 @@ END IF;
     ) THEN
 ALTER TABLE comanda
     ADD CONSTRAINT chk_comanda_status
-        CHECK (status IN ('ABERTA', 'FECHADA', 'CANCELADA'));
+        CHECK (
+            status IN (
+                       'ABERTA',
+                       'FECHADA',
+                       'CANCELADA'
+                )
+            );
 END IF;
+
 END $$;
 
 CREATE INDEX IF NOT EXISTS idx_comanda_numero
     ON comanda(numero_comanda);
 
+CREATE INDEX IF NOT EXISTS idx_comanda_cliente
+    ON comanda(cliente_id);
+
 CREATE INDEX IF NOT EXISTS idx_comanda_garcom
     ON comanda(garcom_id);
 
 
-
---changeset restaurante:005-create-comanda-item
+--changeset restaurante:006-create-comanda-item
 CREATE TABLE IF NOT EXISTS comanda_item (
                                             id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                             comanda_id BIGINT NOT NULL,
@@ -153,6 +221,7 @@ CREATE TABLE IF NOT EXISTS comanda_item (
 
 DO $$
 BEGIN
+
     IF NOT EXISTS (
         SELECT 1
         FROM pg_constraint
@@ -196,6 +265,7 @@ ALTER TABLE comanda_item
     ADD CONSTRAINT chk_comanda_item_valor
         CHECK (valor_unitario > 0);
 END IF;
+
 END $$;
 
 CREATE INDEX IF NOT EXISTS idx_comanda_item_comanda
