@@ -19,6 +19,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClienteController {
 
+    private static final String HEADER_TOTAL_COUNT = "X-Paging-Total-Count";
+    private static final String HEADER_CURRENT_PAGE = "X-Paging-Current-Page";
+
     @Inject
     public ClienteService clienteService;
 
@@ -50,7 +53,12 @@ public class ClienteController {
                            @QueryParam("pageSize") @DefaultValue("10") int pageSize,
                            @QueryParam("page") @DefaultValue("0") int page) {
         try {
-            return Response.ok(clienteService.listAll(sortBy, orderBy, pageSize, page)).build();
+            var items = clienteService.listAll(sortBy, orderBy, pageSize, page);
+            long total = clienteService.countAll();
+            return Response.ok(items)
+                    .header(HEADER_TOTAL_COUNT, total)
+                    .header(HEADER_CURRENT_PAGE, page)
+                    .build();
         } catch (RuntimeException e) {
             return Response.serverError().build();
         }

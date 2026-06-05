@@ -27,6 +27,10 @@ public class GarcomService {
                 .list();
     }
 
+    public long countAll() {
+        return repository.count();
+    }
+
     @Transactional
     public Garcom create(GarcomCreateRequest request) {
         if (request.nome() == null || request.nome().isBlank()) throw new IllegalArgumentException("Nome é obrigatório");

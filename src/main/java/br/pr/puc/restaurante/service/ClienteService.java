@@ -27,6 +27,10 @@ public class ClienteService {
                 .list();
     }
 
+    public long countAll() {
+        return repository.count();
+    }
+
     @Transactional
     public Cliente create(ClienteCreateRequest request) {
         if (request.nome() == null || request.nome().isBlank()) throw new IllegalArgumentException("Nome é obrigatório");
