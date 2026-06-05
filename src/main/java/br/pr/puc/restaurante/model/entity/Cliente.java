@@ -21,8 +21,20 @@ public class Cliente {
     @Column(nullable = false, length = 20)
     private String numero;
 
-    @Column(length = 100)
+    @Column(nullable = false, length = 100)
     private String bairro;
+
+    @Column(length = 200)
+    private String complemento;
+
+    @Column(length = 255)
+    private String referencia;
+
+    @Column(length = 150)
+    private String email;
+
+    @Column(columnDefinition = "TEXT")
+    private String observacoes;
 
     // Construtores, Getters e Setters
     public Long getId() { return id; }
@@ -37,4 +49,12 @@ public class Cliente {
     public void setNumero(String numero) { this.numero = numero; }
     public String getBairro() { return bairro; }
     public void setBairro(String bairro) { this.bairro = bairro; }
+    public String getComplemento() { return complemento; }
+    public void setComplemento(String complemento) { this.complemento = complemento; }
+    public String getReferencia() { return referencia; }
+    public void setReferencia(String referencia) { this.referencia = referencia; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getObservacoes() { return observacoes; }
+    public void setObservacoes(String observacoes) { this.observacoes = observacoes; }
 }

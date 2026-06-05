@@ -41,6 +41,10 @@ public class ClienteService {
         cliente.setRua(request.rua());
         cliente.setNumero(request.numero());
         cliente.setBairro(request.bairro());
+        cliente.setComplemento(request.complemento());
+        cliente.setReferencia(request.referencia());
+        cliente.setEmail(request.email());
+        cliente.setObservacoes(request.observacoes());
 
         repository.persist(cliente);
         return cliente;
@@ -56,6 +60,10 @@ public class ClienteService {
         cliente.setRua(request.rua());
         cliente.setNumero(request.numero());
         cliente.setBairro(request.bairro());
+        cliente.setComplemento(request.complemento());
+        cliente.setReferencia(request.referencia());
+        cliente.setEmail(request.email());
+        cliente.setObservacoes(request.observacoes());
 
         return cliente;
     }
