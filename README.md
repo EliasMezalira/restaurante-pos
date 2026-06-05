@@ -2,28 +2,49 @@
 
 API de ponto de venda para restaurante, construida com Quarkus, PostgreSQL, Hibernate ORM Panache e Liquibase.
 
+## Front-end
+
+O front-end da aplicacao e desenvolvido em Angular 21.
+
+Repositorio: [github.com/daniel-abrahao/app-restaurante-front](https://github.com/daniel-abrahao/app-restaurante-front)
+
+
 ## Pre-requisitos
 
 - Docker e Docker Compose
 - JDK configurado no `JAVA_HOME`
 - Maven Wrapper do projeto (`mvnw` / `mvnw.cmd`)
 
-## Como rodar o projeto
+## Rodar o projeto localmente
 
-Antes de iniciar a aplicacao, suba o banco de dados com Docker Compose:
+Para subir o ambiente local completo, primeiro gere o pacote da aplicacao:
 
 ```shell
-docker compose up -d db
+./mvnw package
 ```
 
-O servico `db` cria um PostgreSQL local com as credenciais usadas pela aplicacao:
+Depois, suba os containers:
+
+```shell
+docker compose up -d
+```
+
+Esse comando sobe o banco de dados e o `adminer`. O servico `db` cria um PostgreSQL local com as credenciais usadas pela aplicacao:
 
 - Banco: `restaurante_pos`
 - Usuario: `restaurante_user`
 - Senha: `restaurante_pass`
 - Porta: `5432`
 
-Depois que o banco estiver saudavel, rode a aplicacao em modo desenvolvimento:
+Se quiser subir somente o banco, use:
+
+```shell
+docker compose up -d db
+```
+
+## Rodar o projeto em desenvolvimento
+
+Depois que o banco estiver saudavel, rode a aplicacao em modo desenvolvimento.
 
 No Windows:
 
@@ -67,17 +88,7 @@ O projeto usa a extensao `quarkus-smallrye-openapi`. A API esta mapeada com meta
 
 ## Docker Compose completo
 
-O arquivo `docker-compose.yml` tambem possui o servico `adminer`. Para subir banco e Adminer:
-
-```shell
-docker compose up -d
-```
-
-Atencao: o Adminer esta configurado na porta `8080`, que e a mesma porta da aplicacao Quarkus. Para desenvolver a API localmente, prefira subir apenas o banco com:
-
-```shell
-docker compose up -d db
-```
+O arquivo `docker-compose.yml` tambem possui o servico `adminer`. Atencao: o Adminer esta configurado na porta `8080`, que e a mesma porta da aplicacao Quarkus. Para desenvolver a API localmente, prefira subir apenas o banco com `docker compose up -d db`.
 
 ## Banco de dados e migrations
 
