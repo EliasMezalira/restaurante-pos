@@ -22,6 +22,9 @@ public class Menu {
     @Column(nullable = false)
     private BigDecimal valor;
 
+    @Column(name = "imagem_base64", columnDefinition = "TEXT")
+    private String imagemBase64;
+
     // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -33,4 +36,6 @@ public class Menu {
     public void setCategoria(String categoria) { this.categoria = categoria; }
     public BigDecimal getValor() { return valor; }
     public void setValor(BigDecimal valor) { this.valor = valor; }
+    public String getImagemBase64() { return imagemBase64; }
+    public void setImagemBase64(String imagemBase64) { this.imagemBase64 = imagemBase64; }
 }

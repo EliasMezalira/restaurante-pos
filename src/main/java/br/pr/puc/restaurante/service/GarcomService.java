@@ -27,14 +27,20 @@ public class GarcomService {
                 .list();
     }
 
+    public long countAll() {
+        return repository.count();
+    }
+
     @Transactional
     public Garcom create(GarcomCreateRequest request) {
         if (request.nome() == null || request.nome().isBlank()) throw new IllegalArgumentException("Nome é obrigatório");
+        if (request.documento() == null || request.documento().isBlank()) throw new IllegalArgumentException("Documento é obrigatório");
 
         Garcom garcom = new Garcom();
         garcom.setNome(request.nome());
-        garcom.setPercentualGorjeta(request.percentualGorjeta());
-        garcom.setIdade(request.idade());
+        garcom.setDocumento(request.documento());
+        garcom.setFotoBase64(request.fotoBase64());
+        garcom.setFolgas(request.folgas() == null ? new String[0] : request.folgas());
 
         repository.persist(garcom);
         return garcom;
@@ -46,8 +52,9 @@ public class GarcomService {
         if (garcom == null) return null;
 
         garcom.setNome(request.nome());
-        garcom.setPercentualGorjeta(request.percentualGorjeta());
-        garcom.setIdade(request.idade());
+        garcom.setDocumento(request.documento());
+        garcom.setFotoBase64(request.fotoBase64());
+        garcom.setFolgas(request.folgas() == null ? new String[0] : request.folgas());
 
         return garcom;
     }

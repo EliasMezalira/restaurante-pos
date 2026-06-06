@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset restaurante:001-create-usuario
+--changeset restaurante:001-create-usuario splitStatements:false
 CREATE TABLE IF NOT EXISTS usuario (
                                        id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                        nome VARCHAR(150) NOT NULL,
@@ -24,7 +24,7 @@ CREATE INDEX IF NOT EXISTS idx_usuario_login
     ON usuario(login);
 
 
---changeset restaurante:002-create-garcom
+--changeset restaurante:002-create-garcom splitStatements:false
 CREATE TABLE IF NOT EXISTS garcom (
                                       id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                       nome VARCHAR(150) NOT NULL,
@@ -50,7 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_garcom_documento
     ON garcom(documento);
 
 
---changeset restaurante:003-create-cliente
+--changeset restaurante:003-create-cliente splitStatements:false
 CREATE TABLE IF NOT EXISTS cliente (
                                        id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                        nome VARCHAR(150) NOT NULL,
@@ -84,7 +84,7 @@ CREATE INDEX IF NOT EXISTS idx_cliente_telefone
     ON cliente(telefone);
 
 
---changeset restaurante:004-create-menu
+--changeset restaurante:004-create-menu splitStatements:false
 CREATE TABLE IF NOT EXISTS menu (
                                     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                     categoria VARCHAR(30) NOT NULL,
@@ -131,7 +131,7 @@ CREATE INDEX IF NOT EXISTS idx_menu_categoria
     ON menu(categoria);
 
 
---changeset restaurante:005-create-comanda
+--changeset restaurante:005-create-comanda splitStatements:false
 CREATE TABLE IF NOT EXISTS comanda (
                                        id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                        numero_comanda VARCHAR(50) NOT NULL,
@@ -208,7 +208,7 @@ CREATE INDEX IF NOT EXISTS idx_comanda_garcom
     ON comanda(garcom_id);
 
 
---changeset restaurante:006-create-comanda-item
+--changeset restaurante:006-create-comanda-item splitStatements:false
 CREATE TABLE IF NOT EXISTS comanda_item (
                                             id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                                             comanda_id BIGINT NOT NULL,

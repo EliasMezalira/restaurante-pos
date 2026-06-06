@@ -31,6 +31,13 @@ public class MenuService {
         return query.page(page, pageSize).list();
     }
 
+    public long countAll(String categoria) {
+        if (categoria != null && !categoria.isBlank()) {
+            return repository.count("categoria", categoria);
+        }
+        return repository.count();
+    }
+
     @Transactional
     public Menu create(ItemCardapioCreateRequest request) {
         if (request.nome() == null || request.nome().isBlank()) throw new IllegalArgumentException("Nome é obrigatório");
@@ -40,6 +47,7 @@ public class MenuService {
         menu.setIngredientes(request.ingredientes());
         menu.setCategoria(request.categoria());
         menu.setValor(request.valor());
+        menu.setImagemBase64(request.imagemBase64());
 
         repository.persist(menu);
         return menu;
@@ -54,6 +62,7 @@ public class MenuService {
         menu.setIngredientes(request.ingredientes());
         menu.setCategoria(request.categoria());
         menu.setValor(request.valor());
+        menu.setImagemBase64(request.imagemBase64());
 
         return menu;
     }
