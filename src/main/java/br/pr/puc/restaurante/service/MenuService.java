@@ -47,6 +47,7 @@ public class MenuService {
         menu.setIngredientes(request.ingredientes());
         menu.setCategoria(request.categoria());
         menu.setValor(request.valor());
+        menu.setImagemBase64(request.imagemBase64());
 
         repository.persist(menu);
         return menu;
@@ -61,6 +62,7 @@ public class MenuService {
         menu.setIngredientes(request.ingredientes());
         menu.setCategoria(request.categoria());
         menu.setValor(request.valor());
+        menu.setImagemBase64(request.imagemBase64());
 
         return menu;
     }
