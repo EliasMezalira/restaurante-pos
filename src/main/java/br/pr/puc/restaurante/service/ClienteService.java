@@ -33,7 +33,8 @@ public class ClienteService {
 
     @Transactional
     public Cliente create(ClienteCreateRequest request) {
-        if (request.nome() == null || request.nome().isBlank()) throw new IllegalArgumentException("Nome é obrigatório");
+        if (request.nome() == null || request.nome().isBlank())
+            throw new IllegalArgumentException("Nome é obrigatório");
 
         Cliente cliente = new Cliente();
         cliente.setNome(request.nome());
@@ -64,7 +65,7 @@ public class ClienteService {
         cliente.setReferencia(request.referencia());
         cliente.setEmail(request.email());
         cliente.setObservacoes(request.observacoes());
-
+        repository.persist(cliente);
         return cliente;
     }
 
