@@ -1,0 +1,31 @@
+####
+# Builds the Quarkus native executable inside Docker and creates a small runtime image.
+###
+FROM ghcr.io/graalvm/native-image-community:25 AS build
+
+WORKDIR /project
+
+RUN microdnf install -y unzip \
+    && microdnf clean all
+
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+COPY src/ src/
+
+RUN sed -i 's/\r$//' mvnw .mvn/wrapper/maven-wrapper.properties \
+    && chmod +x mvnw \
+    && ./mvnw package -Dnative -DskipTests -Dquarkus.native.container-build=false
+
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7
+
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+
+COPY --from=build --chown=1001:root --chmod=0755 /project/target/*-runner /work/application
+
+EXPOSE 8080
+USER 1001
+
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
